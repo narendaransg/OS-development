@@ -117,17 +117,7 @@ Planned progress includes:
 
 ## Main Learning Resource
 
-- :contentReference[oaicite:1]{index=1}
-
-## Additional References
-
-- :contentReference[oaicite:2]{index=2}
-- :contentReference[oaicite:3]{index=3}
-- :contentReference[oaicite:4]{index=4}
-- :contentReference[oaicite:5]{index=5}
-- :contentReference[oaicite:6]{index=6}
-
----
+- `https://www.youtube.com/playlist?list=PLFjM7v6KGMpiH2G-kT781ByCNC_0pKpPN` youtube tutorial
 
 # Educational Purpose
 
@@ -138,23 +128,6 @@ This repository is primarily intended for:
 - architecture exploration
 
 The implementation prioritizes educational understanding over production-level operating system design.
-
----
-
-# Future Plans
-
-Potential future enhancements include:
-
-- custom shell
-- filesystem support
-- multitasking
-- user mode support
-- scheduler implementation
-- memory allocator
-- keyboard and display drivers
-- ELF loading
-- syscall interface
-- simple GUI experimentation
 
 ---
 
