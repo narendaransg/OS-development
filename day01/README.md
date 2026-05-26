@@ -1,8 +1,8 @@
 # Day 01 - Stage 1 Bootloader
 
-This folder contains a basic **x86 16-bit bootloader** built and tested using **QEMU**.
+This folder contains a basic **x86 16-bit stage 1 bootloader** built using **NASM** and tested using **QEMU**.
 
-The bootloader is written in NASM assembly and converted into a raw binary boot sector. The binary is then placed inside a floppy disk image and executed through QEMU.
+The bootloader is assembled into a raw binary, copied into a floppy disk image, and executed as a bootable image.
 
 ---
 
@@ -10,9 +10,12 @@ The bootloader is written in NASM assembly and converted into a raw binary boot 
 
 ```text
 .
+|-- README.md
 |-- build
 |   |-- main.bin
 |   `-- main_floppy.img
+|-- images
+|   `-- Screenshot 2026-05-26 210814.png
 |-- makefile
 `-- src
     `-- main.asm
@@ -24,10 +27,11 @@ The bootloader is written in NASM assembly and converted into a raw binary boot 
 
 | File | Description |
 |---|---|
-| `src/main.asm` | 16-bit bootloader source code |
-| `makefile` | Build automation file |
-| `build/main.bin` | Raw bootloader binary |
-| `build/main_floppy.img` | Bootable floppy image used by QEMU |
+| `src/main.asm` | Main 16-bit bootloader source code |
+| `makefile` | Build and run automation |
+| `build/main.bin` | Raw boot sector binary |
+| `build/main_floppy.img` | Bootable floppy disk image |
+| `images/Screenshot 2026-05-26 210814.png` | QEMU execution screenshot |
 
 ---
 
@@ -36,36 +40,32 @@ The bootloader is written in NASM assembly and converted into a raw binary boot 
 This bootloader:
 
 - Runs in **16-bit real mode**
-- Is loaded by BIOS at memory address `0x7C00`
-- Uses a **512-byte boot sector**
+- Starts from BIOS-loaded address `0x7C00`
+- Initializes segment registers
+- Sets up the stack
+- Uses BIOS video interrupt `int 0x10`
+- Prints a text message on the QEMU screen
+- Ends with a halt loop
 - Contains the boot signature `0xAA55`
-- Boots through a floppy image in QEMU
 
 ---
 
-## Boot Process
-
-```text
-BIOS
-  ↓
-Loads boot sector into 0x7C00
-  ↓
-Executes bootloader code
-  ↓
-Boots from floppy image
-```
-
----
-
-## Build and Run
-
-Build the bootloader:
+## Build
 
 ```bash
 make
 ```
 
-Run the floppy image in QEMU:
+This generates:
+
+```text
+build/main.bin
+build/main_floppy.img
+```
+
+---
+
+## Run
 
 ```bash
 qemu-system-x86_64 -fda ./build/main_floppy.img
@@ -75,22 +75,29 @@ qemu-system-x86_64 -fda ./build/main_floppy.img
 
 ## Output
 
-QEMU detects the floppy image and starts the boot process.
+The bootloader runs successfully in QEMU and prints:
 
 ```text
-Booting from Hard Disk...
-Boot failed: could not read the boot disk
-
-Booting from Floppy...
+I am Narendaran, exploring OS development
 ```
 
-![QEMU Boot Output](images/os%20does%20nothing.png)
+![QEMU Output](images/Screenshot%202026-05-26%20210814.png)
 
 ---
 
-## Notes
+## Key Concepts Used
 
-- The boot sector must be exactly **512 bytes**.
-- The boot signature must be placed at the end of the sector.
-- `0xAA55` is required for BIOS to recognize the sector as bootable.
-- The current bootloader does not print text or load any external program.
+| Concept | Purpose |
+|---|---|
+| `org 0x7C00` | Matches the BIOS bootloader load address |
+| `bits 16` | Generates 16-bit real mode instructions |
+| Segment setup | Initializes memory access through segment registers |
+| Stack setup | Provides stack space for calls and register saving |
+| `int 0x10` | BIOS video interrupt used for text output |
+| `0xAA55` | Boot signature required by BIOS |
+
+---
+
+## Summary
+
+This stage creates a working boot sector that can be loaded by BIOS, executed in QEMU, and used to print text directly through BIOS services.
